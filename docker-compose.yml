@@ -40,7 +40,7 @@ networks:
   # A network for all web services to attach to
   # Backend services (i.e.: databases) should not attatch to this network
   web:
-    external: false
+    internal: true
 
 volumes:
   # Certificate storage
