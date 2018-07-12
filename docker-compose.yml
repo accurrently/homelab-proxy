@@ -18,7 +18,7 @@ services:
     volumes:
       - "proxy.certs:/etc/nginx/certs:ro"
       - "proxy.vhosts:/etc/nginx/vhost.d"
-      - "/configs/proxy:/etc/nginx/"
+      - "/configs/proxy/network_internal.conf:/etc/nginx/network_internal.conf"
       - "proxy.nginx-html:/usr/share/nginx/html"
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
     labels:
