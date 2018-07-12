@@ -1,0 +1,51 @@
+####################################################
+# homelab-reverse-proxy
+####################################################
+# A simple reverse proxy stack for web services with 
+# LetsEncrypt Certificates
+#---------------------------------------------------
+
+version: '3'
+
+services:
+
+# Nginx reverse proxy
+  proxy:
+    image: jwilder/nginx-proxy:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "proxy.certs:etc/nginx/certs:ro"
+      - "proxy.vhosts:/etc/nginx/vhost.d"
+      - "/configs/proxy:/etc/nginx/"
+      - "proxy.nginx-html:/usr/share/nginx/html"
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: ""
+    networks:
+      - web
+ 
+ # Automatic LetsEncrypt    
+  acme:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - "proxy.certs:/etc/nginx/certs:rw"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "proxy.vhosts:/etc/nginx/vhost.d"
+      - "/configs/proxy:/etc/nginx/"
+      - "proxy.nginx-html:/usr/share/nginx/html"
+    
+networks:
+  # A network for all web services to attach to
+  # Backend services (i.e.: databases) should not attatch to this network
+  web:
+    external: false
+
+volumes:
+  # Certificate storage
+  proxy.certs:
+  # Virtual hosts configs
+  proxy.vhosts:
+  # Nginx default web root (for LetsEncrypt and other defaults)
+  proxy.nginx-html:
